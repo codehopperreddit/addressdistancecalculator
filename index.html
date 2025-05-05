@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Distance Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f9fc;
+            color: #333;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 18px;
+            font-weight: normal;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+            background-color: #edf7ff;
+            display: none;
+        }
+        .error {
+            background-color: #ffeded !important;
+            color: #e74c3c;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            display: none;
+        }
+        .success {
+            background-color: #edffed !important;
+            color: #27ae60;
+            border-left: 4px solid #27ae60;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loader div {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 5px;
+            background-color: #3498db;
+            border-radius: 50%;
+            animation: loader 1.4s infinite ease-in-out both;
+        }
+        .loader div:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        .loader div:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        @keyframes loader {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        .travel-modes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .travel-mode {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .travel-mode:hover {
+            background-color: #f5f9ff;
+        }
+        .travel-mode.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .travel-mode i {
+            font-size: 20px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: white;
+            border-color: #ddd;
+            color: #3498db;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 20px;
+            background-color: #3498db;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+        .template-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+        .template-link:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .preview-container {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        #downloadBtn {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Address Distance Calculator</h1>
+        <h2>Calculate distance between addresses : CSV Batch Processing</h2>
+        
+        <div class="form-group">
+            <label for="apiKey">Google Maps API Key:</label>
+            <input type="text" id="apiKey" placeholder="Enter your Google Maps API Key">
+        </div>
+
+        <div class="form-group">
+            <label for="csvFile">Upload CSV File:</label>
+            <input type="file" id="csvFile" accept=".csv">
+            <a href="#" id="downloadTemplate" class="template-link">Download template CSV</a>
+        </div>
+        
+        <div class="travel-modes">
+            <div class="travel-mode active" data-mode="DRIVING">
+                <i class="fas fa-car"></i>
+                <span>Driving</span>
+            </div>
+            <div class="travel-mode" data-mode="WALKING">
+                <i class="fas fa-walking"></i>
+                <span>Walking</span>
+            </div>
+            <div class="travel-mode" data-mode="BICYCLING">
+                <i class="fas fa-bicycle"></i>
+                <span>Cycling</span>
+            </div>
+            <div class="travel-mode" data-mode="TRANSIT">
+                <i class="fas fa-bus"></i>
+                <span>Transit</span>
+            </div>
+        </div>
+        
+        <div class="preview-container" id="previewContainer">
+            <table id="previewTable">
+                <thead>
+                    <tr>
+                        <th>Origin Address</th>
+                        <th>Origin City</th>
+                        <th>Origin State</th>
+                        <th>Origin Zip</th>
+                        <th>Destination Address</th>
+                        <th>Destination City</th>
+                        <th>Destination State</th>
+                        <th>Destination Zip</th>
+                    </tr>
+                </thead>
+                <tbody id="previewTableBody"></tbody>
+            </table>
+        </div>
+        
+        <button id="processButton" disabled>Process Addresses</button>
+        
+        <div class="error" id="errorMessage"></div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+        
+        <div class="loader">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        
+        <div id="result"></div>
+        
+        <button id="downloadBtn">Download Results as CSV</button>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>
